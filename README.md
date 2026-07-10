@@ -83,8 +83,10 @@ Default output format [json]: json
 
 ### SSH Key Pair
   - Generate ssh keys:
+  ```bash
     - ssh-keygen
     - ls .ssh
+```
   
 ### Install kops
   ```bash
