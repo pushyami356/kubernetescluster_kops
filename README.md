@@ -28,7 +28,7 @@ Jobs
 CronJobs
 Ingress
 
-# Prerequisites
+# 📌 1. Prerequisites
 
 Before creating the cluster, install:
 
@@ -39,10 +39,34 @@ SSH Key Pair
 Route53 Hosted Zone
 AWS Account with required permissions
 
+# AWS CLI
+snap install aws-cli --classic
+
+# Verify Installed Tools
+  Check AWS CLI installation:
+  aws --version
+
+ # Aws configure
+
+# SSH Key Pair
+  Generate ssh keys:
+  ssh-keygen
+  
+# Install kops
+curl -Lo kops https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
+chmod +x kops
+sudo mv kops /usr/local/bin/kops
+
+# Install and Set Up kubectl on Linux:
+
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
 # Create an S3 Bucket
 aws s3 mb s3://<your-kops-state-bucket>
 
-Enable versioning:
+# Enable versioning:
 
 aws s3api put-bucket-versioning \
 --bucket <your-kops-state-bucket> \
@@ -56,28 +80,19 @@ export KOPS_STATE_STORE=s3://<your-kops-state-bucket>
 
 kops create cluster --name=<cluster-name> --state=s3://<your-kops-state-bucket> --zones=us-east-1a,us-east-1b --node-count=2 \
 --node-size=t3.small --control-plane-size=t3.medium --dns-zone=<your-domain>
+Review the configuration:
 
-# AWS CLI
-snap install aws-cli --classic
+kops edit cluster <cluster-name>
 
-# kubectl
-
-Install and Set Up kubectl on Linux:
-
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-
-sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
-# Kops
-kops create cluster --name=kubevpro.k8s.local --state=s3://kopsstatebkt2043 --zones=us-east-1a,us-east-1b --node-count=2 --node-size=t3.small --control-plane-size=c7i-flex.large --node-volume-size=12 --control-plane-volume-size=12 --ssh-public-key ~/.ssh/id_ed25519.pub
-
+# Update the Cluster
 kops update cluster --name=kubevpro.k8s.local --state=s3://kopsstatebkt2043 --yes --admin 
 
+# Validate the Cluster
 kops validate cluster --name=kubevpro.k8s.local --state=s3://kopsstatebkt2043
 
-# SSH Key Pair
-  Generate ssh keys:
-  ssh-keygen
-  
+# Delete Cluster
+kops delete cluster --name=kubevpro.k8s.local --state=s3://kopsstatebkt2043 --yes
+
+
 # Route53 Hosted Zone
 AWS Account with required permissions
