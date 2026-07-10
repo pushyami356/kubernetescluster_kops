@@ -146,7 +146,7 @@ kops delete cluster --name=kubevpro.k8s.local --state=s3://kopsstatebkt2043 --ye
   - Navigate to Route53 and create a public hosted zone.
   - The hosted zone creates 2 records – NS record and SOA record. 
   - The NS record has four name servers, copy all the name servers and create records in GoDaddy
-## Create NS records in Domain Registrar (GoDaddy): 
+### Create NS records in Domain Registrar (GoDaddy): 
 
 Login to your GoDaddy account and create 4 NS records for the name servers of the AWS Hosted Zone. 
 
