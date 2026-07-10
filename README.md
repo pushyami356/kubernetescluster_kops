@@ -32,20 +32,25 @@ Ingress
 
 Before creating the cluster, install:
 
-AWS CLI
-kubectl
-Kops
-SSH Key Pair
-Route53 Hosted Zone
-AWS Account with required permissions
+ - AWS CLI
+ - kubectl
+ - Kops
+ - SSH Key Pair
+ - Route53 Hosted Zone
+ - AWS Account with required permissions
 
-# AWS CLI
+## AWS CLI
 #### Install aws cli
-snap install aws-cli --classic
 
+  ```bash
+snap install aws-cli --classic
+```
 ### Verify Installed Tools
   Check AWS CLI installation:
-  aws --version
+
+  ```bash
+aws --version
+```
   
 ### AWS Configuration Setup
 Log in to the AWS Management Console in your browser and complete the following steps:
@@ -62,50 +67,93 @@ Log in to the AWS Management Console in your browser and complete the following 
 - Confirm and proceed
 - Create the access key
 - Copy or download the Access Key ID and Secret Access Key securely
-
-# SSH Key Pair
-  Generate ssh keys:
-  ssh-keygen
-  ls .ssh
   
-# Install kops
+**Now configure AWS:**
+```bash
+aws configure
+```
+
+**Enter the following details:**
+```bash
+AWS Access Key ID [****************7XV7]: 
+AWS Secret Access Key [****************HpDr]: 
+Default region name [us-east-1]: us-east-1
+Default output format [json]: json
+```
+
+### SSH Key Pair
+  - Generate ssh keys:
+    - ssh-keygen
+    - ls .ssh
+  
+### Install kops
+  ```bash
 curl -Lo kops https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
 chmod +x kops
 sudo mv kops /usr/local/bin/kops
+```
 
-# Install and Set Up kubectl on Linux:
+### Install and Set Up kubectl on Linux:
+  ```bash
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+```
 
-# Create an S3 Bucket
-aws s3 mb s3://<your-kops-state-bucket>
+### Create an S3 Bucket
+  ```bash
+    aws s3api create-bucket --bucket kopsstatebkt2043 --region us-east-1
+```
 
-# Enable versioning:
-
-aws s3api put-bucket-versioning \
---bucket <your-kops-state-bucket> \
---versioning-configuration Status=Enabled
+### Enable versioning:
+  ```bash
+aws s3api put-bucket-versioning --bucket <your-kops-state-bucket> --versioning-configuration Status=Enabled
+```
 
 Export the state store:
-export KOPS_STATE_STORE=s3://<your-kops-state-bucket>
+  ```bash
+ export KOPS_STATE_STORE=s3://<your-kops-state-bucket>
+```
 
 ### Create the Cluster
-
+  ```bash
 kops create cluster --name=<cluster-name> --state=s3://<your-kops-state-bucket> --zones=us-east-1a,us-east-1b --node-count=2 \
 --node-size=t3.small --control-plane-size=t3.medium --dns-zone=<your-domain>
+```
 Review the configuration:
-
+  ```bash
 kops edit cluster <cluster-name>
-
+```
 ### Update the Cluster
-kops update cluster --name=kubevpro.k8s.local --state=s3://kopsstatebkt2043 --yes --admin 
+  ```bash
+kops update cluster --name=kubevpro.k8s.local --state=s3://kopsstatebkt2043 --yes --admin
+```
 
 ### Validate the Cluster
+
+  ```bash
 kops validate cluster --name=kubevpro.k8s.local --state=s3://kopsstatebkt2043
+```
 
 ### Delete Cluster
+
+```bash
 kops delete cluster --name=kubevpro.k8s.local --state=s3://kopsstatebkt2043 --yes
+```
 
+## Create a Hosted Zone in R53: 
+  - Navigate to Route53 and create a public hosted zone.
+  - The hosted zone creates 2 records – NS record and SOA record. 
+  - The NS record has four name servers, copy all the name servers and create records in GoDaddy
+## Create NS records in Domain Registrar (GoDaddy): 
 
-# Route53 Hosted Zone
+Login to your GoDaddy account and create 4 NS records for the name servers of the AWS Hosted Zone. 
+
+### Create an Ingress Controller: 
+
+### Create an ingress controller with command 
+  ```bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.3/deploy/static/provider/aws/deploy.yaml
+```
+### Create an EBS volume for DB deployment:
+
 AWS Account with required permissions
