@@ -42,11 +42,25 @@ AWS Account with required permissions
 # AWS CLI
 snap install aws-cli --classic
 
-# Verify Installed Tools
+### Verify Installed Tools
   Check AWS CLI installation:
   aws --version
-
- # Aws configure
+  
+### AWS Configuration Setup
+Log in to the AWS Management Console in your browser and complete the following steps:
+#### Step 1: Create IAM User
+- Go to IAM (Identity and Access Management)
+   - Create a new user
+   - Attach the policy: AdministratorAccess
+   - Create the user
+#### Step 2: Create Access Keys
+- Click on the created IAM user
+- Go to Security Credentials
+- Click Create Access Key
+- Select Command Line Interface (CLI)
+- Confirm and proceed
+- Create the access key
+- Copy or download the Access Key ID and Secret Access Key securely
 
 # SSH Key Pair
   Generate ssh keys:
