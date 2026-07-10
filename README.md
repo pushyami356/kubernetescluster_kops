@@ -40,6 +40,7 @@ Route53 Hosted Zone
 AWS Account with required permissions
 
 # AWS CLI
+#### Check AWS CLI installation:
 snap install aws-cli --classic
 
 ### Verify Installed Tools
